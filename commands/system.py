@@ -47,3 +47,6 @@ def getvar(executor, variable: str) -> bool:
 def devices(executor) -> bool:
     """列出连接的设备"""
     return executor.run_fastboot_command(['devices'])
+def adb_devices(executor) -> bool:
+    """列出连接的设备"""
+    return executor.run_adb_command(['devices'])

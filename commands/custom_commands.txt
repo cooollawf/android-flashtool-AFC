@@ -11,3 +11,5 @@ system:format_partition:FORMAT
 system:oem_command:OEM
 system:wait_command:WAIT
 system:fb_reboot_command:REBOOT
+system:adb_devices:ADB_DEVICES
+system:devices:DEVICES

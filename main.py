@@ -141,7 +141,33 @@ class FastbootExecutor:
         except Exception as e:
             print(f"错误: 执行命令时发生异常 - {e}")
             return False
-    
+    def run_cmd_command(self, args: List[str]) -> bool:
+        """执行cmd命令"""
+        try:
+            cmd = ['cmd', '/c'] + args
+            print(f"执行: {' '.join(cmd)}")
+            
+            result = subprocess.run(
+                cmd, 
+                capture_output=True, 
+                text=True, 
+                timeout=60
+            )
+            
+            if result.returncode == 0:
+                if result.stdout.strip():
+                    print(f"成功: {result.stdout.strip()}")
+                return True
+            else:
+                print(f"失败: {result.stderr.strip()}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            print("错误: 命令执行超时")
+            return False
+        except Exception as e:
+            print(f"错误: 执行命令时发生异常 - {e}")
+            return False
     def set_variable(self, var_name: str, value: str) -> None:
         """设置变量"""
         self.variables[var_name] = value
