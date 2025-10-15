@@ -3,6 +3,14 @@ import time
 def reboot_device(executor, target: str = "") -> bool:
     """重启设备"""
     if target.upper() == "BOOTLOADER":
+        return executor.run_adb_command(['reboot','bootloader'])
+    elif target.upper() == "RECOVERY":
+        return executor.run_adb_command(['reboot','recovery'])
+    else:
+        return executor.run_adb_command(['reboot'])
+def fb_reboot_device(executor, target: str = "") -> bool:
+    """重启设备"""
+    if target.upper() == "BOOTLOADER":
         return executor.run_fastboot_command(['reboot','bootloader'])
     elif target.upper() == "RECOVERY":
         return executor.run_fastboot_command(['reboot','recovery'])

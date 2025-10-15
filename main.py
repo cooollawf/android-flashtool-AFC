@@ -23,25 +23,40 @@ class FastbootExecutor:
         # 自动加载命令
         self.load_commands()
     
-def load_commands(self):
-    """自动加载commands目录下的所有命令"""
-    commands_dir = Path(__file__).parent / "commands"
+    def load_commands(self):
+        """自动加载commands目录下的所有命令"""
+        commands_dir = Path(__file__).parent / "commands"
+        
+        # 确保commands目录存在
+        if not commands_dir.exists():
+            print(f"警告: commands目录不存在 - {commands_dir}")
+            return
+        
+        # 读取命令注册文件
+        commands_file = commands_dir / "custom_commands.txt"
+        if commands_file.exists():
+            with open(commands_file, 'r', encoding='utf-8') as f:
+                for line_num, line in enumerate(f, 1):
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        parts = [part.strip() for part in line.split(':')]
+                        if len(parts) == 2:
+                            # 格式: 模块名:函数名
+                            module_name, function_name = parts
+                            command_name = function_name.upper()
+                            self.load_command(module_name, function_name, command_name)
+                        elif len(parts) == 3:
+                            # 格式: 模块名:函数名:命令别名
+                            module_name, function_name, command_name = parts
+                            self.load_command(module_name, function_name, command_name.upper())
+                        else:
+                            print(f"错误: 第{line_num}行格式不正确 - {line}")
+        else:
+            print(f"警告: 命令注册文件不存在 - {commands_file}")
+        
+        print(f"已加载 {len(self.commands)} 个命令: {', '.join(sorted(self.commands.keys()))}")
     
-    commands_file = commands_dir / "custom_commands.txt"
-    if commands_file.exists():
-        with open(commands_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith('#'):
-                    parts = line.split(':')
-                    if len(parts) == 2:
-                        module_name, function_name = parts
-                        self.load_command(module_name.strip(), function_name.strip())
-                    elif len(parts) == 3:
-                        module_name, function_name, command_alias = parts
-                        self.load_command(module_name.strip(), function_name.strip(), command_alias.strip())
-    
-    def load_command(self, module_name: str, function_name: str):
+    def load_command(self, module_name: str, function_name: str, command_name: str):
         """加载单个命令"""
         try:
             # 导入模块
@@ -60,7 +75,6 @@ def load_commands(self):
                     bound_func = partial(command_func, self)
                     
                     # 注册命令
-                    command_name = function_name.upper()
                     self.commands[command_name] = bound_func
                     print(f"✓ 加载命令: {command_name} (来自 {module_name}.{function_name})")
                 else:
@@ -68,6 +82,8 @@ def load_commands(self):
             else:
                 print(f"✗ 未找到函数: {module_name}.{function_name}")
                 
+        except ImportError as e:
+            print(f"✗ 导入模块失败 {module_name}: {e}")
         except Exception as e:
             print(f"✗ 加载命令失败 {module_name}.{function_name}: {e}")
     
@@ -75,6 +91,33 @@ def load_commands(self):
         """执行fastboot命令"""
         try:
             cmd = ['fastboot'] + args
+            print(f"执行: {' '.join(cmd)}")
+            
+            result = subprocess.run(
+                cmd, 
+                capture_output=True, 
+                text=True, 
+                timeout=60
+            )
+            
+            if result.returncode == 0:
+                if result.stdout.strip():
+                    print(f"成功: {result.stdout.strip()}")
+                return True
+            else:
+                print(f"失败: {result.stderr.strip()}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            print("错误: 命令执行超时")
+            return False
+        except Exception as e:
+            print(f"错误: 执行命令时发生异常 - {e}")
+            return False
+    def run_adb_command(self, args: List[str]) -> bool:
+        """执行adb命令"""
+        try:
+            cmd = ['adb'] + args
             print(f"执行: {' '.join(cmd)}")
             
             result = subprocess.run(
@@ -200,12 +243,13 @@ def load_commands(self):
         return success
 
 def find_script_files(directory: Path) -> List[Path]:
-    """查找目录下的所有fs.AFC文件"""
-    script_files = []
+    """查找目录下的所有fs.AFC文件（去重）"""
+    script_files = set()  # 使用set去重
     
+    # 只查找一层目录，避免重复
     for pattern in ['*.fs.AFC', '*.afc', '*.AFC']:
-        script_files.extend(directory.glob(pattern))
-        script_files.extend(directory.glob(f'**/{pattern}'))
+        for file_path in directory.glob(pattern):
+            script_files.add(file_path.resolve())  # 使用绝对路径去重
     
     return sorted(script_files)
 
@@ -220,8 +264,8 @@ def check_fastboot_available() -> bool:
 
 def main():
     if len(sys.argv) != 2:
-        print("用法: python fastboot_script.py <脚本目录>")
-        print("示例: python fastboot_script.py ./scripts")
+        print("用法: python main.py <脚本目录>")
+        print("示例: python main.py ./scripts")
         sys.exit(1)
     
     script_dir = sys.argv[1]

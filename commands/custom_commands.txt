@@ -5,8 +5,9 @@
 
 flash:flash_partition:FLASH
 unlock:unlock_device:UNLOCK
-system:reboot_device:REBOOT
+system:reboot_device:ADBREBOOT
 system:erase_partition:ERASE
 system:format_partition:FORMAT
 system:oem_command:OEM
 system:wait_command:WAIT
+system:fb_reboot_command:REBOOT
