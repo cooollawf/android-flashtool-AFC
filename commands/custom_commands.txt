@@ -1,0 +1,12 @@
+# 命令注册文件
+# 格式: 模块名:函数名
+# 函数第一个参数必须是 'executor'
+# 不看这个就瞎几把加就给你妈杀了
+
+flash:flash_partition
+unlock:unlock_device
+system:reboot_device
+system:erase_partition
+system:format_partition
+system:oem_command
+system:wait_command
