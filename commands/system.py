@@ -1,4 +1,5 @@
 import time
+import os
 
 def reboot_device(executor, target: str = "") -> bool:
     """重启设备"""
@@ -8,6 +9,7 @@ def reboot_device(executor, target: str = "") -> bool:
         return executor.run_adb_command(['reboot','recovery'])
     else:
         return executor.run_adb_command(['reboot'])
+
 def fb_reboot_device(executor, target: str = "") -> bool:
     """重启设备"""
     if target.upper() == "BOOTLOADER":
@@ -16,6 +18,34 @@ def fb_reboot_device(executor, target: str = "") -> bool:
         return executor.run_fastboot_command(['reboot','recovery'])
     else:
         return executor.run_fastboot_command(['reboot'])
+
+def print_message(executor, message: str = "") -> bool:
+    """打印消息 - 使用Python内置print函数"""
+    try:
+        print(message)
+        return True
+    except Exception as e:
+        print(f"打印消息时出错: {e}")
+        return False
+
+def pause_message(executor, prompt: str = "按任意键继续...") -> bool:
+    """暂停等待用户输入 - 使用Python内置input函数"""
+    try:
+        input(prompt)
+        return True
+    except Exception as e:
+        print(f"暂停时出错: {e}")
+        return False
+
+def clear_screen(executor) -> bool:
+    """清屏 - 使用跨平台方法"""
+    try:
+        # 跨平台清屏
+        os.system('cls' if os.name == 'nt' else 'clear')
+        return True
+    except Exception as e:
+        print(f"清屏时出错: {e}")
+        return False
 
 def erase_partition(executor, partition: str) -> bool:
     """擦除分区"""
@@ -47,6 +77,7 @@ def getvar(executor, variable: str) -> bool:
 def devices(executor) -> bool:
     """列出连接的设备"""
     return executor.run_fastboot_command(['devices'])
+
 def adb_devices(executor) -> bool:
     """列出连接的设备"""
     return executor.run_adb_command(['devices'])

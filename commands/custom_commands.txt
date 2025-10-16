@@ -10,6 +10,9 @@ system:erase_partition:ERASE
 system:format_partition:FORMAT
 system:oem_command:OEM
 system:wait_command:WAIT
-system:fb_reboot_command:REBOOT
+system:fb_reboot_device:REBOOT
 system:adb_devices:ADB_DEVICES
 system:devices:DEVICES
+system:print_message:PRINT
+system:pause_message:PAUSE
+system:clear_screen:CLEAR

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Fastboot脚本执行器 - 模块化版本
-自动加载commands目录下的命令函数
+必须指定具体的脚本文件
 """
 
 import os
@@ -15,8 +15,9 @@ from pathlib import Path
 from typing import Dict, List, Callable, Any, Optional
 
 class FastbootExecutor:
-    def __init__(self, script_dir: str):
-        self.script_dir = Path(script_dir)
+    def __init__(self, script_file: str):
+        self.script_file = Path(script_file)
+        self.script_dir = self.script_file.parent
         self.commands: Dict[str, Callable] = {}
         self.variables: Dict[str, str] = {}
         
@@ -91,7 +92,7 @@ class FastbootExecutor:
         """执行fastboot命令"""
         try:
             cmd = ['fastboot'] + args
-            print(f"执行: {' '.join(cmd)}")
+            
             
             result = subprocess.run(
                 cmd, 
@@ -114,11 +115,12 @@ class FastbootExecutor:
         except Exception as e:
             print(f"错误: 执行命令时发生异常 - {e}")
             return False
+            
     def run_adb_command(self, args: List[str]) -> bool:
         """执行adb命令"""
         try:
             cmd = ['adb'] + args
-            print(f"执行: {' '.join(cmd)}")
+            
             
             result = subprocess.run(
                 cmd, 
@@ -141,11 +143,12 @@ class FastbootExecutor:
         except Exception as e:
             print(f"错误: 执行命令时发生异常 - {e}")
             return False
+            
     def run_cmd_command(self, args: List[str]) -> bool:
         """执行cmd命令"""
         try:
             cmd = ['cmd', '/c'] + args
-            print(f"执行: {' '.join(cmd)}")
+            
             
             result = subprocess.run(
                 cmd, 
@@ -156,10 +159,10 @@ class FastbootExecutor:
             
             if result.returncode == 0:
                 if result.stdout.strip():
-                    print(f"成功: {result.stdout.strip()}")
+                    print(f"{result.stdout.strip()}")
                 return True
             else:
-                print(f"失败: {result.stderr.strip()}")
+                print(f"{result.stderr.strip()}")
                 return False
                 
         except subprocess.TimeoutExpired:
@@ -168,6 +171,7 @@ class FastbootExecutor:
         except Exception as e:
             print(f"错误: 执行命令时发生异常 - {e}")
             return False
+            
     def set_variable(self, var_name: str, value: str) -> None:
         """设置变量"""
         self.variables[var_name] = value
@@ -231,8 +235,15 @@ class FastbootExecutor:
         
         return None
     
-    def execute_script(self, script_content: str) -> bool:
-        """执行脚本内容"""
+    def execute_script(self) -> bool:
+        """执行指定的脚本文件"""
+        try:
+            with open(self.script_file, 'r', encoding='utf-8') as f:
+                script_content = f.read()
+        except Exception as e:
+            print(f"错误: 无法读取脚本文件 - {e}")
+            return False
+            
         lines = script_content.split('\n')
         success = True
         
@@ -249,12 +260,10 @@ class FastbootExecutor:
                 
                 elif parsed[0] in self.commands:
                     command, args = parsed[0], parsed[1]
-                    print(f"[行{line_num}] 执行命令: {command}{tuple(args)}")
                     
                     if not self.commands[command](*args):
                         print(f"[行{line_num}] 命令执行失败: {command}")
                         success = False
-                
                 else:
                     print(f"[行{line_num}] 错误: 未知命令 - {parsed[0]}")
                     success = False
@@ -268,17 +277,6 @@ class FastbootExecutor:
         
         return success
 
-def find_script_files(directory: Path) -> List[Path]:
-    """查找目录下的所有fs.AFC文件（去重）"""
-    script_files = set()  # 使用set去重
-    
-    # 只查找一层目录，避免重复
-    for pattern in ['*.fs.AFC', '*.afc', '*.AFC']:
-        for file_path in directory.glob(pattern):
-            script_files.add(file_path.resolve())  # 使用绝对路径去重
-    
-    return sorted(script_files)
-
 def check_fastboot_available() -> bool:
     """检查fastboot是否可用"""
     try:
@@ -290,51 +288,37 @@ def check_fastboot_available() -> bool:
 
 def main():
     if len(sys.argv) != 2:
-        print("用法: python main.py <脚本目录>")
-        print("示例: python main.py ./scripts")
+        print("用法: python main.py <脚本文件路径>")
+        print("示例: python main.py ./scripts/flash_rom.fs.AFC")
         sys.exit(1)
     
-    script_dir = sys.argv[1]
+    script_file = sys.argv[1]
     
-    if not os.path.exists(script_dir):
-        print(f"错误: 目录不存在 - {script_dir}")
+    if not os.path.exists(script_file):
+        print(f"错误: 脚本文件不存在 - {script_file}")
+        sys.exit(1)
+    
+    if not os.path.isfile(script_file):
+        print(f"错误: 指定的路径不是文件 - {script_file}")
         sys.exit(1)
     
     if not check_fastboot_available():
         print("错误: 未找到fastboot命令，请确保已安装Android SDK并配置环境变量")
         sys.exit(1)
     
-    executor = FastbootExecutor(script_dir)
+    executor = FastbootExecutor(script_file)
     
-    # 查找并执行脚本文件
-    script_files = find_script_files(Path(script_dir))
+    print(f"{'='*50}")
+    print(f"执行脚本: {script_file}")
+    print(f"{'='*50}")
     
-    if not script_files:
-        print(f"在目录 {script_dir} 中未找到任何脚本文件 (*.fs.AFC)")
+    success = executor.execute_script()
+    
+    if success:
+        print(f"\n✓ 脚本执行完成: {script_file}")
+    else:
+        print(f"\n✗ 脚本执行失败: {script_file}")
         sys.exit(1)
-    
-    print(f"找到 {len(script_files)} 个脚本文件:")
-    for script_file in script_files:
-        print(f"  - {script_file}")
-    
-    for script_file in script_files:
-        print(f"\n{'='*50}")
-        print(f"执行脚本: {script_file}")
-        print(f"{'='*50}")
-        
-        try:
-            with open(script_file, 'r', encoding='utf-8') as f:
-                script_content = f.read()
-            
-            success = executor.execute_script(script_content)
-            
-            if success:
-                print(f"\n✓ 脚本执行完成: {script_file}")
-            else:
-                print(f"\n✗ 脚本执行失败: {script_file}")
-        
-        except Exception as e:
-            print(f"\n✗ 执行脚本时发生错误: {e}")
 
 if __name__ == "__main__":
     main()
