@@ -59,5 +59,6 @@ DEVICES # 获取设备列表（FASTBOOT下）
 PRINT # 打印
 PAUSE # 暂停
 CLEAR # 清屏
+```
 ## 感谢
 - 在这里，感谢某贼的BFF项目，为本项目提供了启发。
