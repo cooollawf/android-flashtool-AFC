@@ -1,0 +1,18 @@
+# 命令注册文件
+# 格式: 模块名:函数名
+# 函数第一个参数必须是 'executor'
+# 不看这个就瞎几把加就给你妈杀了
+
+flash:flash_partition:FLASH
+unlock:unlock_device:UNLOCK
+system:reboot_device:ADBREBOOT
+system:erase_partition:ERASE
+system:format_partition:FORMAT
+system:oem_command:OEM
+system:wait_command:WAIT
+system:fb_reboot_device:REBOOT
+system:adb_devices:ADB_DEVICES
+system:devices:DEVICES
+system:print_message:PRINT
+system:pause_message:PAUSE
+system:clear_screen:CLEAR
