@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 确保获取所有历史记录用于版本号生成
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -44,19 +44,18 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconfirm --onedir --console --add-data "commands;commands/" main.py
+          # 直接构建到带有版本号的目录，避免重命名问题
+          $outputDir = "android-flashtool-AFC_${{ env.version }}_windows_x64"
           
-          # 重输出目录重命名为更有版本号的名称
-          $outputDir = "dist/android-flashtool-AFC_${{ env.version }}_windows_x64"
-          Rename-Item -Path "dist/main" -NewName $outputDir
+          # 使用 --distpath 和 --name 参数直接指定输出路径和名称
+          pyinstaller --noconfirm --onedir --console --add-data "commands;commands/" --distpath "dist/$outputDir" --name "android-flashtool" main.py
           
           # 创建ZIP压缩包
-          Compress-Archive -Path $outputDir -DestinationPath "${outputDir}.zip"
+          Compress-Archive -Path "dist/$outputDir" -DestinationPath "dist/$outputDir.zip"
           
-          # 输出构建结果信息
           echo "Build completed successfully"
-          echo "Output directory: $outputDir"
-          echo "ZIP package: ${outputDir}.zip"
+          echo "Output directory: dist/$outputDir"
+          echo "ZIP package: dist/$outputDir.zip"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -82,7 +81,7 @@ jobs:
             - Windows 64-bit executable
             
             ### Changes:
-            - See [CHANGE log](https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }})
+            - See commit history for details
             
             ### Assets:
             - Windows 64-bit: `android-flashtool-AFC_${{ env.version }}_windows_x64.zip`
