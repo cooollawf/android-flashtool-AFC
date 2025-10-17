@@ -17,4 +17,4 @@ system:devices:DEVICES
 system:print_message:PRINT
 system:pause_message:PAUSE
 system:clear_screen:CLEAR
-system:boot_device:BOOT
+system:boot_device:BOOTIMG
