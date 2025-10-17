@@ -12,10 +12,6 @@ def lock_device(executor, method: str = "") -> bool:
     else:
         return executor.run_fastboot_command(['flashing', 'lock'])
 
-def unlock_critical(executor) -> bool:
-    """解锁关键分区"""
-    return executor.run_fastboot_command(['flashing', 'unlock_critical'])
-
-def get_unlock_data(executor) -> bool:
-    """获取解锁数据"""
-    return executor.run_fastboot_command(['oem', 'get_unlock_data'])
+def unlock_info(executor) -> bool:
+    """OEM信息"""
+    return executor.run_fastboot_command(['oem', 'device-info'])

@@ -11,7 +11,7 @@ def reboot_device(executor, target: str = "") -> bool:
         return executor.run_adb_command(['reboot'])
 
 def fb_reboot_device(executor, target: str = "") -> bool:
-    """重启设备"""
+    """重启设备(在fastboot下)"""
     if target.upper() == "BOOTLOADER":
         return executor.run_fastboot_command(['reboot','bootloader'])
     elif target.upper() == "RECOVERY":
@@ -81,3 +81,7 @@ def devices(executor) -> bool:
 def adb_devices(executor) -> bool:
     """列出连接的设备"""
     return executor.run_adb_command(['devices'])
+
+def boot_device(executor,boot_file) -> bool:
+    """在fastboot下引导boot文件"""
+    return executor.run_fastboot_command(['boot',boot_file])

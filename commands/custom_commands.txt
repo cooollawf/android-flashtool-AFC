@@ -2,6 +2,7 @@
 # 格式: 模块名:函数名
 # 函数第一个参数必须是 'executor'
 # 不看这个就瞎几把加就给你妈杀了
+# 注：有些参数为DEBUG参数，后续可能会调整
 
 flash:flash_partition:FLASH
 unlock:unlock_device:UNLOCK
@@ -16,3 +17,4 @@ system:devices:DEVICES
 system:print_message:PRINT
 system:pause_message:PAUSE
 system:clear_screen:CLEAR
+system:boot_device:BOOT
