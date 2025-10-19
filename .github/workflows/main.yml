@@ -50,7 +50,7 @@ jobs:
           $outputDir = "android-flashtool-AFC_${{ env.version }}_windows_x64"
           
           # 使用 --distpath 和 --name 参数直接指定输出路径和名称
-          pyinstaller --noconfirm --onedir --console --add-data "commands;commands/" "tools;tools/" --distpath "dist/$outputDir" --name "android-flashtool" main.py
+          pyinstaller --noconfirm --onedir --console --add-data "commands;commands/" --add-data  "tools;tools/" --distpath "dist/$outputDir" --name "android-flashtool" main.py
           
           # 创建ZIP压缩包
           Compress-Archive -Path "dist/$outputDir" -DestinationPath "dist/$outputDir.zip"
