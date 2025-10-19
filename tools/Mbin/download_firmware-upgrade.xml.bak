@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><flashtool-config version="2.0">
+    <general>
+        <chip-name>MT6797</chip-name>
+        <storage-type>EMMC</storage-type>
+        <download-agent>D:\workspace\flashone_1109\flashone\Mbin1\Mbin1\DA_BR.bin</download-agent>
+        <scatter>D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\MT6797_Android_scatter.txt</scatter>
+        <authentication>D:\workspace\flashone_1109\flashone\Mbin1\DA_Security\auth_sv5_letv.auth</authentication>
+        <certification/>
+        <rom-list>
+            <rom enable="true" index="0">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\preloader_s2_plus.bin</rom>
+            <rom enable="true" index="2">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\recovery-verified.img</rom>
+			<rom enable="true" index="23">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\md1rom-verified.img</rom>
+			<rom enable="true" index="24">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\md1dsp-verified.img</rom>
+			<rom enable="true" index="25">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\md1arm7-verified.img</rom>
+			<rom enable="true" index="26">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\md3rom-verified.img</rom>
+			<rom enable="true" index="27">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\tinysys-scp-verified.bin</rom>
+            <rom enable="true" index="28">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\tinysys-scp-verified.bin</rom>
+            <rom enable="true" index="30">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\lk-verified.bin</rom>
+            <rom enable="true" index="31">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\lk-verified.bin</rom>
+            <rom enable="true" index="32">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\boot-verified.img</rom>
+            <rom enable="true" index="33">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\logo-verified.bin</rom>
+            <rom enable="true" index="34">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\trustzone-verified.bin</rom>
+            <rom enable="true" index="35">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\trustzone-verified.bin</rom>
+            <rom enable="true" index="37">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\system.img</rom>
+            <rom enable="true" index="38">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\cache.img</rom>
+            <rom enable="true" index="39">D:\workspace\flashone_1109\flashone\QFIL_FASTBOOT_X6_CN_HEXCNFN5601405171S_20160517\userdata.img</rom>
+        </rom-list>
+        <connection com-port="" high-speed="true" power="AutoDetect" timeout-count="60000" type="BromUSB"/>
+        <checksum-level>none</checksum-level>
+    </general>
+    <commands>
+        <firmware-upgrade>
+            <scene>FIRMWARE_UPGRADE</scene>
+            <readback>
+                <physical-readback is-physical-readback="false"/>
+            </readback>
+            <format auto-format="true" auto-format-flag="FormatExcept_BL" erase-flag="NormalErase" physical="false" validation="false"/>
+            <da-download-all/>
+            <write-memory>
+                <write-memory-item addr-mode="LogicalAddress" address="0x000000001f600000" input-length="0x2400000000" input-mode="FromFile" part-id="0" program-mode="PageOnly"/>
+            </write-memory>
+        </firmware-upgrade>
+    </commands>
+</flashtool-config>

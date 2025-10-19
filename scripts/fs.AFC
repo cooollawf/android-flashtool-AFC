@@ -1,2 +1,1 @@
-UNLOCK(OLD)
-REBOOT()
+FLASHMTK('H:\download\fo\Mbin\MTK_AllInOne_DA.bin','H:\download\fo\deedphoneroms\MT6797_Android_scatter.txt','download')

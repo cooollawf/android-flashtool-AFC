@@ -2,6 +2,8 @@
 """
 Fastboot脚本执行器 - 模块化版本
 必须指定具体的脚本文件
+支持DEBUG参数
+直接调用项目目录中的工具
 """
 
 import os
@@ -20,6 +22,13 @@ class FastbootExecutor:
         self.script_dir = self.script_file.parent
         self.commands: Dict[str, Callable] = {}
         self.variables: Dict[str, str] = {}
+        self.debug_mode = False  # 调试模式标志
+        
+        # 项目根目录（main.py所在目录）
+        self.project_root = Path(__file__).parent
+        
+        # 工具目录
+        self.tools_dir = self.project_root / "tools"
         
         # 自动加载命令
         self.load_commands()
@@ -77,7 +86,8 @@ class FastbootExecutor:
                     
                     # 注册命令
                     self.commands[command_name] = bound_func
-                    print(f"✓ 加载命令: {command_name} (来自 {module_name}.{function_name})")
+                    if self.debug_mode:
+                        print(f"[DEBUG] 加载命令: {command_name} (来自 {module_name}.{function_name})")
                 else:
                     print(f"✗ 函数签名错误: {module_name}.{function_name} 第一个参数必须是 'executor'")
             else:
@@ -88,11 +98,36 @@ class FastbootExecutor:
         except Exception as e:
             print(f"✗ 加载命令失败 {module_name}.{function_name}: {e}")
     
+    def _find_tool(self, tool_name: str) -> Optional[Path]:
+        """在工具目录中查找工具"""
+        # 可能的工具扩展名
+        extensions = ['.exe', '.bat', '.cmd', '']  # 空字符串表示无扩展名
+        
+        for ext in extensions:
+            tool_path = self.tools_dir / f"{tool_name}{ext}"
+            if tool_path.exists():
+                return tool_path
+        
+        # 如果没有找到，尝试在工具目录的子目录中查找
+        for item in self.tools_dir.rglob(f"{tool_name}*"):
+            if item.is_file():
+                return item
+        
+        return None
+    
     def run_fastboot_command(self, args: List[str]) -> bool:
         """执行fastboot命令"""
         try:
-            cmd = ['fastboot'] + args
+            # 查找fastboot工具
+            fastboot_path = self._find_tool("fastboot")
+            if fastboot_path:
+                cmd = [str(fastboot_path)] + args
+            else:
+                # 如果没找到，使用系统PATH中的fastboot
+                cmd = ['fastboot'] + args
             
+            if self.debug_mode:
+                print(f"[DEBUG] 执行命令: {' '.join(cmd)}")
             
             result = subprocess.run(
                 cmd, 
@@ -100,6 +135,13 @@ class FastbootExecutor:
                 text=True, 
                 timeout=60
             )
+            
+            if self.debug_mode:
+                print(f"[DEBUG] 返回码: {result.returncode}")
+                if result.stdout:
+                    print(f"[DEBUG] 标准输出: {result.stdout}")
+                if result.stderr:
+                    print(f"[DEBUG] 标准错误: {result.stderr}")
             
             if result.returncode == 0:
                 if result.stdout.strip():
@@ -119,8 +161,16 @@ class FastbootExecutor:
     def run_adb_command(self, args: List[str]) -> bool:
         """执行adb命令"""
         try:
-            cmd = ['adb'] + args
+            # 查找adb工具
+            adb_path = self._find_tool("adb")
+            if adb_path:
+                cmd = [str(adb_path)] + args
+            else:
+                # 如果没找到，使用系统PATH中的adb
+                cmd = ['adb'] + args
             
+            if self.debug_mode:
+                print(f"[DEBUG] 执行命令: {' '.join(cmd)}")
             
             result = subprocess.run(
                 cmd, 
@@ -128,6 +178,13 @@ class FastbootExecutor:
                 text=True, 
                 timeout=60
             )
+            
+            if self.debug_mode:
+                print(f"[DEBUG] 返回码: {result.returncode}")
+                if result.stdout:
+                    print(f"[DEBUG] 标准输出: {result.stdout}")
+                if result.stderr:
+                    print(f"[DEBUG] 标准错误: {result.stderr}")
             
             if result.returncode == 0:
                 if result.stdout.strip():
@@ -149,6 +206,8 @@ class FastbootExecutor:
         try:
             cmd = ['cmd', '/c'] + args
             
+            if self.debug_mode:
+                print(f"[DEBUG] 执行命令: {' '.join(cmd)}")
             
             result = subprocess.run(
                 cmd, 
@@ -156,6 +215,13 @@ class FastbootExecutor:
                 text=True, 
                 timeout=60
             )
+            
+            if self.debug_mode:
+                print(f"[DEBUG] 返回码: {result.returncode}")
+                if result.stdout:
+                    print(f"[DEBUG] 标准输出: {result.stdout}")
+                if result.stderr:
+                    print(f"[DEBUG] 标准错误: {result.stderr}")
             
             if result.returncode == 0:
                 if result.stdout.strip():
@@ -172,20 +238,75 @@ class FastbootExecutor:
             print(f"错误: 执行命令时发生异常 - {e}")
             return False
             
+    def run_spflashtool_command(self, args: List[str]) -> bool:
+        """执行SPFlashTool命令"""
+        try:
+            # 查找SPFlashTool工具
+            spflash_path = self._find_tool("flash_tool") or self._find_tool("Mbin")
+            
+            if not spflash_path:
+                print("错误: 未找到SPFlashTool工具，请确保工具在tools目录中")
+                return False
+            
+            cmd = [str(spflash_path)] + args
+            
+            if self.debug_mode:
+                print(f"[DEBUG] 执行命令: {' '.join(cmd)}")
+            
+            result = subprocess.run(
+                cmd, 
+                capture_output=True, 
+                text=True, 
+                timeout=300  # SPFlashTool操作可能需要更长时间
+            )
+            
+            if self.debug_mode:
+                print(f"[DEBUG] 返回码: {result.returncode}")
+                if result.stdout:
+                    print(f"[DEBUG] 标准输出: {result.stdout}")
+                if result.stderr:
+                    print(f"[DEBUG] 标准错误: {result.stderr}")
+            
+            if result.returncode == 0:
+                if result.stdout.strip():
+                    print(f"成功: {result.stdout.strip()}")
+                return True
+            else:
+                print(f"失败: {result.stderr.strip()}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            print("错误: SPFlashTool命令执行超时")
+            return False
+        except Exception as e:
+            print(f"错误: 执行SPFlashTool命令时发生异常 - {e}")
+            return False
+            
     def set_variable(self, var_name: str, value: str) -> None:
         """设置变量"""
         self.variables[var_name] = value
+        if self.debug_mode:
+            print(f"[DEBUG] 设置变量: {var_name} = {value}")
     
     def get_variable(self, var_name: str) -> str:
         """获取变量值"""
-        return self.variables.get(var_name, "")
+        value = self.variables.get(var_name, "")
+        if self.debug_mode:
+            print(f"[DEBUG] 获取变量: {var_name} = {value}")
+        return value
     
     def parse_arguments(self, args_str: str) -> List[str]:
         """解析参数，支持变量替换和字符串引用"""
+        if self.debug_mode:
+            print(f"[DEBUG] 解析参数: {args_str}")
+            
         # 替换变量
         for var_name, value in self.variables.items():
             args_str = args_str.replace(f'${var_name}', value)
         
+        if self.debug_mode:
+            print(f"[DEBUG] 替换变量后: {args_str}")
+            
         # 简单的参数解析，支持引号
         args = []
         current_arg = ""
@@ -212,6 +333,9 @@ class FastbootExecutor:
         if current_arg:
             args.append(current_arg.strip())
         
+        if self.debug_mode:
+            print(f"[DEBUG] 解析后参数: {args}")
+            
         return args
     
     def parse_command_line(self, line: str) -> Optional[tuple]:
@@ -247,6 +371,16 @@ class FastbootExecutor:
         lines = script_content.split('\n')
         success = True
         
+        # 检查是否在脚本开头设置了DEBUG参数
+        for line in lines:
+            line = line.strip()
+            if line.startswith('DEBUG='):
+                debug_value = line.split('=', 1)[1].strip().upper()
+                if debug_value in ['TRUE', '1', 'ON', 'YES']:
+                    self.debug_mode = True
+                    print("调试模式已启用")
+                break
+        
         for line_num, line in enumerate(lines, 1):
             parsed = self.parse_command_line(line)
             if not parsed:
@@ -260,6 +394,9 @@ class FastbootExecutor:
                 
                 elif parsed[0] in self.commands:
                     command, args = parsed[0], parsed[1]
+                    
+                    if self.debug_mode:
+                        print(f"[行{line_num}] 执行命令: {command}({', '.join(args)})")
                     
                     if not self.commands[command](*args):
                         print(f"[行{line_num}] 命令执行失败: {command}")
@@ -277,15 +414,6 @@ class FastbootExecutor:
         
         return success
 
-def check_fastboot_available() -> bool:
-    """检查fastboot是否可用"""
-    try:
-        subprocess.run(['fastboot', '--version'], 
-                      capture_output=True, check=True)
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
-
 def main():
     if len(sys.argv) != 2:
         print("用法: python main.py <脚本文件路径>")
@@ -300,10 +428,6 @@ def main():
     
     if not os.path.isfile(script_file):
         print(f"错误: 指定的路径不是文件 - {script_file}")
-        sys.exit(1)
-    
-    if not check_fastboot_available():
-        print("错误: 未找到fastboot命令，请确保已安装Android SDK并配置环境变量")
         sys.exit(1)
     
     executor = FastbootExecutor(script_file)

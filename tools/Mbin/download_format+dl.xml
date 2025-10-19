@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<flashtool-config version="2.0">
+    <general>
+        <chip-name>MT6797</chip-name>
+        <storage-type>EMMC</storage-type>
+        <download-agent>.\DA_Security\DA_BR.bin</download-agent>
+        <scatter>D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\MT6797_Android_scatter.txt</scatter>
+        <authentication>.\DA_Security\auth_sv5_letv.auth</authentication>
+        <certification></certification>
+        <rom-list>
+            <rom index="0" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\preloader_s2_plus.bin</rom>
+            <rom index="2" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\recovery-verified.img</rom>
+			<rom index="23" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\md1rom-verified.img</rom>
+			<rom index="24" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\md1dsp-verified.img</rom>
+			<rom index="25" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\md1arm7-verified.img</rom>
+			<rom index="26" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\md3rom-verified.img</rom>
+			<rom index="27" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\tinysys-scp-verified.bin</rom>
+            <rom index="28" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\tinysys-scp-verified.bin</rom>
+            <rom index="30" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\lk-verified.bin</rom>
+            <rom index="31" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\lk-verified.bin</rom>
+            <rom index="32" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\boot-verified.img</rom>
+            <rom index="33" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\logo-verified.bin</rom>
+            <rom index="34" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\trustzone-verified.bin</rom>
+            <rom index="35" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\trustzone-verified.bin</rom>
+            <rom index="37" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\system.img</rom>
+            <rom index="38" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\cache.img</rom>
+            <rom index="39" enable="true">D:\Phone_Load\s2plus\20160505_s2_plus_whole_netcom_fastboot\userdata.img</rom>
+        </rom-list>
+        <connection type="BromUSB" high-speed="true" power="AutoDetect" timeout-count="3600000" com-port="" />
+        <checksum-level>none</checksum-level>
+    </general>
+    <commands>
+        <format-download>
+            <combo-format>
+                <format validation="false" physical="true" erase-flag="NormalErase" auto-format="true" auto-format-flag="FormatAll" />
+            </combo-format>
+            <da-download-all />
+        </format-download>
+    </commands>
+</flashtool-config>

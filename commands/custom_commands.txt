@@ -18,3 +18,4 @@ system:print_message:PRINT
 system:pause_message:PAUSE
 system:clear_screen:CLEAR
 system:boot_device:BOOTIMG
+mtk_spflashtool:flashmtk_device:FLASHMTK

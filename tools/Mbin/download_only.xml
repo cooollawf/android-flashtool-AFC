@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><flashtool-config version="2.0">
+    <general>
+        <chip-name>MT6797</chip-name>
+        <storage-type>EMMC</storage-type>
+        <download-agent>.\DA_Security\DA_BR.bin</download-agent>
+        <scatter>D:\Framework3.0\20160319\X6\signed_bin\MT6797_Android_scatter.txt</scatter>
+        <authentication>.\DA_Security\auth_sv5_letv.auth</authentication>
+        <certification/>
+        <rom-list>
+            <rom enable="true" index="0">D:\Framework3.0\20160319\X6\signed_bin\preloader_s2_plus.bin</rom>
+            <rom enable="true" index="2">D:\Framework3.0\20160319\X6\signed_bin\recovery-verified.img</rom>
+			<rom enable="true" index="23">D:\Framework3.0\20160319\X6\signed_bin\md1rom-verified.img</rom>
+			<rom enable="true" index="24">D:\Framework3.0\20160319\X6\signed_bin\md1dsp-verified.img</rom>
+			<rom enable="true" index="25">D:\Framework3.0\20160319\X6\signed_bin\md1arm7-verified.img</rom>
+			<rom enable="true" index="26">D:\Framework3.0\20160319\X6\signed_bin\md3rom-verified.img</rom>
+			<rom enable="true" index="27">D:\Framework3.0\20160319\X6\signed_bin\tinysys-scp-verified.bin</rom>
+            <rom enable="true" index="28">D:\Framework3.0\20160319\X6\signed_bin\tinysys-scp-verified.bin</rom>
+            <rom enable="true" index="30">D:\Framework3.0\20160319\X6\signed_bin\lk-verified.bin</rom>
+            <rom enable="true" index="31">D:\Framework3.0\20160319\X6\signed_bin\lk-verified.bin</rom>
+            <rom enable="true" index="32">D:\Framework3.0\20160319\X6\signed_bin\boot-verified.img</rom>
+            <rom enable="true" index="33">D:\Framework3.0\20160319\X6\signed_bin\logo-verified.bin</rom>
+            <rom enable="true" index="34">D:\Framework3.0\20160319\X6\signed_bin\trustzone-verified.bin</rom>
+            <rom enable="true" index="35">D:\Framework3.0\20160319\X6\signed_bin\trustzone-verified.bin</rom>
+            <rom enable="true" index="37">D:\Framework3.0\20160319\X6\signed_bin\system.img</rom>
+            <rom enable="true" index="38">D:\Framework3.0\20160319\X6\signed_bin\cache.img</rom>
+            <rom enable="true" index="39">D:\Framework3.0\20160319\X6\signed_bin\userdata.img</rom>
+        </rom-list>
+        <connection com-port="" high-speed="true" power="AutoDetect" timeout-count="3600000" type="BromUSB"/>
+        <checksum-level>none</checksum-level>
+    </general>
+    <commands>
+        <download-only>
+            <da-download-all/>
+        </download-only>
+    </commands>
+</flashtool-config>
