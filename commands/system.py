@@ -7,6 +7,8 @@ def reboot_device(executor, target: str = "") -> bool:
         return executor.run_adb_command(['reboot','bootloader'])
     elif target.upper() == "RECOVERY":
         return executor.run_adb_command(['reboot','recovery'])
+    elif target.upper() == "EDL":
+        return executor.run_adb_command(['reboot','edl'])
     else:
         return executor.run_adb_command(['reboot'])
 
